@@ -17,6 +17,7 @@ from torch.autograd import *
 from ..utils import misc as utils
 from . import utils as model_utils
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class CaptionModel(nn.Module):
     def __init__(self):
@@ -198,7 +199,7 @@ class CaptionModel(nn.Module):
                     # move the current group one step forward in time
                     
                     it = beam_seq_table[divm][:, :, t-divm].reshape(-1)
-                    logprobs_table[divm], state_table[divm] = self.get_logprobs_state(it.cuda(), *(args[divm] + [state_table[divm]]))
+                    logprobs_table[divm], state_table[divm] = self.get_logprobs_state(it.to(device), *(args[divm] + [state_table[divm]]))
                     logprobs_table[divm] = F.log_softmax(logprobs_table[divm] / temperature, dim=-1)
 
         # all beams are sorted by their log-probabilities
